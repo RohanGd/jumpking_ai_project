@@ -22,7 +22,11 @@ class Sprite {
     }
 
     update() {
+        if (this.position.x <= (window.innerWidth - canvas.width)/2 && this.position.x >= canvas.width)
+            this.velocity.x = 0
+        else this.position.x += this.velocity.x
         this.draw()
+        
         this.position.y += this.velocity.y
         if(this.position.y < canvas.height - this.height - this.velocity.y) {
             this.velocity.y += gravity
@@ -59,12 +63,31 @@ animate()
 window.addEventListener('keydown', (event) => {
     console.log(event)
     switch (event.key) {
-        case 'w':
+        case ' ':
             player.velocity.y = -10
             break;
-    
+        case 'd':
+            player.velocity.x = 2.5
+            break;
+        case 'a':
+            player.velocity.x = -2.5
+            break;
         default:
             break;
     }
 })
 
+
+window.addEventListener('keyup', (event) => {
+    console.log(event)
+    switch (event.key) {
+        case 'd':
+            player.velocity.x = 0
+            break;
+        case 'a':
+            player.velocity.x = 0
+            break;
+        default:
+            break;
+    }
+})
