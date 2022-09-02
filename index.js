@@ -2,7 +2,7 @@ const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
 canvas.width = 1200
 canvas.height = 900
-// const gravity = 0.2
+const gravity = 0.3
 
 c.fillRect((window.innerWidth - canvas.width)/2, 0, canvas.width, canvas.height)
 
@@ -23,7 +23,12 @@ class Sprite {
 
     update() {
         this.draw()
-        this.position.y += 10
+        this.position.y += this.velocity.y
+        if(this.position.y < canvas.height - this.height - this.velocity.y) {
+            this.velocity.y += gravity
+        }
+        else this.velocity.y = 0
+
     }
 
     draw() {
@@ -41,9 +46,25 @@ player = new Sprite({
 })
 
 
-player.draw()
-
 function animate() {
     window.requestAnimationFrame(animate)
+    c.fillStyle = "black"
+    c.fillRect((window.innerWidth - canvas.width)/2, 0, canvas.width, canvas.height)
     player.update()
 }
+
+player.draw()
+animate()
+
+window.addEventListener('keydown', (event) => {
+    console.log(event)
+    switch (event.key) {
+        case 'w':
+            player.velocity.y = -10
+            break;
+    
+        default:
+            break;
+    }
+})
+
