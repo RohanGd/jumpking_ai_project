@@ -3,6 +3,7 @@ const c = canvas.getContext('2d')
 canvas.width = 1200
 canvas.height = 900
 const gravity = 0.7
+let friction = -0.3
 
 c.fillRect((window.innerWidth - canvas.width)/2, 0, canvas.width, canvas.height)
 
@@ -73,8 +74,12 @@ function animate() {
     player.update()
 
     // setTimeout(playMove(),1000)
-    player.velocity.x = 0
+    // while(player.velocity.x > 0)
+    //     player.velocity.x += friction
+    // while(player.velocity.x < 0)
+    //     player.velocity.x -= friction
     // player.velocity.y = 0
+    player.velocity.x = 0
     if (keys.a.pressed && player.lastKey === 'a' && player.position.x > (window.innerWidth - canvas.width)/2) {
         // await delay(1000)
         player.velocity.x = -10
@@ -92,10 +97,15 @@ function animate() {
 }
 
 function resolveCollision() {
-    if ((player.position.x > (window.innerWidth - canvas.width) / 2 )
+    if ((player.position.x >= (window.innerWidth - canvas.width) / 2 )
     && (player.position.x < canvas.width - player.width)) return 
+    else if ((player.position.x >= canvas.width - player.width)) {
+        player.position.x = canvas.width - player.width - 1
+        player.velocity.x *= -1
+    }
     else {
-        player.velocity.x *= -0.75
+        player.position.x = (window.innerWidth - canvas.width) / 2
+        player.velocity.x *= -1
     }
 }
 // function genRandomKey() {
