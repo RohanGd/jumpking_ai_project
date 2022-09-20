@@ -1,185 +1,178 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
-canvas.width = 1200
-canvas.height = 900
-const gravity = 0.7
-let friction = -0.3
+let lines = []
 
-c.fillRect((window.innerWidth - canvas.width)/2, 0, canvas.width, canvas.height)
+let idleImage = null;
+let squatImage = null;
+let jumpImage = null;
+let oofImage = null;
+let run1Image = null;
+let run2Image = null;
+let run3Image = null;
+let fallenImage = null;
+let fallImage = null;
+let showingLines = false;
+let showingCoins = false;
+let levelImages = [];
 
-class Sprite {
-    constructor(position, size) {
-        this.position = position
-        this.width = size.width
-        this.height = size.height
-        this.lastKey
-        this.velocity = {
-            x:0,
-            y:0
-        }
-        // this.speed = {
-        //     x:5,
-        //     y:10
-        // }
+let creatingLines = true
+
+function preload() {
+    backgroundImage = loadImage('images/levelImages/1.png')
+    idleImage = loadImage('images/poses/idle.png')
+    squatImage = loadImage('images/poses/squat.png')
+    jumpImage = loadImage('images/poses/jump.png')
+    oofImage = loadImage('images/poses/oof.png')
+    run1Image = loadImage('images/poses/run1.png')
+    run2Image = loadImage('images/poses/run2.png')
+    run3Image = loadImage('images/poses/run3.png')
+    fallenImage = loadImage('images/poses/fallen.png')
+    fallImage = loadImage('images/poses/fall.png')
+
+
+    snowImage = loadImage('images/snow3.png')
+
+    for (let i = 1; i <= 43; i++) {
+        levelImages.push(loadImage('images/levelImages/' + i + '.png'))
     }
 
-    update() {
-        this.draw()
-        this.position.x += this.velocity.x
-        this.position.y += this.velocity.y
-        if(this.position.y < canvas.height - this.height - this.velocity.y) {
-            this.velocity.y += gravity
-        } else this.velocity.y = 0
+    jumpSound = loadSound('sounds/jump.mp3')
+    fallSound = loadSound('sounds/fall.mp3')
+    bumpSound = loadSound('sounds/bump.mp3')
+    landSound = loadSound('sounds/land.mp3')
 
-    }
 
-    draw() {
-        c.fillStyle = "red"
-        c.fillRect(this.position.x, this.position.y, this.width, this.height)
-    }
 }
 
-player = new Sprite({
-    x: 600,
-    y: 800
-}, {
-    width: 50,
-    height: 100
-})
-
-const keys = {
-    a : {
-        pressed : false
-    },
-    d : {
-        pressed : false
-    },
-    space : {
-        pressed : false
-    }
+function setUpCanvas() {
+    canvas = createCanvas(1200, 950)
+    canvas.parent('canvas')
+    width = canvas.width
+    height = canvas.height - 50
 }
 
-// function delay(delayInms) {
-//     return new Promise(resolve => {
-//       setTimeout(() => {
-//         resolve(2);
-//       }, delayInms);
-//     });
-//   }
-
-function animate() {
-    window.requestAnimationFrame(animate)
-    c.fillStyle = "black"
-    c.fillRect((window.innerWidth - canvas.width)/2, 0, canvas.width, canvas.height)
-    player.update()
-
-    // setTimeout(playMove(),1000)
-    // while(player.velocity.x > 0)
-    //     player.velocity.x += friction
-    // while(player.velocity.x < 0)
-    //     player.velocity.x -= friction
-    // player.velocity.y = 0
-    player.velocity.x = 0
-    if (keys.a.pressed && player.lastKey === 'a' && player.position.x > (window.innerWidth - canvas.width)/2) {
-        // await delay(1000)
-        player.velocity.x = -10
-    } else if (keys.d.pressed && player.lastKey === 'd') {
-        // await delay(1000)
-        player.velocity.x = 10
-    }
-
-    if (keys.space.pressed) {
-        player.velocity.y  = -20
-    }
-
-    resolveCollision()
-    // resetKeys()
-}
-
-function resolveCollision() {
-    if ((player.position.x >= (window.innerWidth - canvas.width) / 2 )
-    && (player.position.x < canvas.width - player.width)) return 
-    else if ((player.position.x >= canvas.width - player.width)) {
-        player.position.x = canvas.width - player.width - 1
-        player.velocity.x *= -1
-    }
-    else {
-        player.position.x = (window.innerWidth - canvas.width) / 2
-        player.velocity.x *= -1
-    }
-}
-// function genRandomKey() {
-//     let x = Math.floor(Math.random() * 3)   
-//     if (x === 0) return 'd'
-//     else if (x === 1) return 'a'
-//     else return ' '
-// }
-
-// function playMove() {
-//     let move = genRandomKey()
-//     console.log(move)
+function setup() {
+    setUpCanvas()
+    player = new Player()
+    setupLevels()
     
-//     switch (move) {
-//         case ' ':
-//             keys.space.pressed = true
-//             break;
-//         case 'd':
-//             keys.d.pressed = true
-//             player.lastKey = 'd'
-//             break;
-//         case 'a':
-//             keys.a.pressed = true
-//             player.lastKey = 'a'
-//             break;
-//         default:
-//             break;
-//     }
+}
 
-// }
+function draw() {
+    background(10)
+    image(levels[player.currentLevel].levelImage, 0, 0)
+    levels[player.currentLevel].show();
+    if (!creatingLines) player.update()
+    drawMousePosition()
+    showLines()
+    // l.show()
 
-// function resetKeys() {
-//     // for(k in keys) {
-//     //     k.pressed = false
-//     // }
+}
 
-//     keys.space.pressed = false
-// }
+let mousePos1 = null
+let mousePos2 = null
+let linesString = '\ntempLevel = new Level()'
 
-player.draw()
-animate()
+function mouseClicked() {
+    if (creatingLines) {
+        let snappedX = mouseX - mouseX % 20;
+        let snappedY = mouseY - mouseY % 20;
+        if (mousePos1 == null) {
+            mousePos1 = createVector(snappedX, snappedY);
+        } else {
+            mousePos2 = createVector(snappedX, snappedY);
+            lines.push(new Line(mousePos1.x, mousePos1.y, mousePos2.x, mousePos2.y));
+            linesString += '\ntempLevel.lines.push(new Line(' + mousePos1.x + ',' + mousePos1.y + ',' + mousePos2.x + ',' + mousePos2.y + '));';
+            mousePos1 = null;
+            mousePos2 = null;
+        }
+    }
+}
 
-window.addEventListener('keydown', (event) => {
-    console.log(event)
-    switch (event.key) {
+function drawMousePosition() {
+    let snappedX = mouseX - mouseX % 20;
+    let snappedY = mouseY - mouseY % 20;
+    push();
+    fill(255, 0, 0)
+    noStroke();
+    ellipse(snappedX, snappedY, 5);
+
+    if (mousePos1 != null) {
+        stroke(255, 0, 0)
+        strokeWeight(5)
+        line(mousePos1.x, mousePos1.y, snappedX, snappedY)
+    }
+
+    pop();
+}
+
+function showLines() {
+    if (creatingLines) {
+        for (let l of lines) {
+            l.show();
+        }
+    }
+}
+
+function keyPressed() {
+    switch (key) {
         case ' ':
-            keys.space.pressed = true
-            break;
-        case 'd':
-            keys.d.pressed = true
-            player.lastKey = 'd'
-            break;
-        case 'a':
-            keys.a.pressed = true
-            player.lastKey = 'a'
+            player.jumpHeld = true
             break;
         default:
             break;
     }
-})
 
-window.addEventListener('keyup', (event) => {
-    console.log(event)
-    switch (event.key) {
-        case ' ':
-            keys.space.pressed = false
+    switch (keyCode) {
+        case LEFT_ARROW:
+            player.leftHeld = true
+
             break;
-        case 'd':
-            keys.d.pressed = false
+
+        case RIGHT_ARROW:
+            player.rightHeld = true
+
             break;
-        case 'a':
-            keys.a.pressed = false
-            break;
+
         default:
             break;
     }
-})
+}
+
+function keyReleased() {
+    switch (key) {
+        case ' ':
+            player.jumpHeld = false
+            player.jump()
+            player.isOnGround = false
+            break;
+
+        case 'N':
+            if (creatingLines) {
+                player.currentLevel += 1
+                linesString += '\nlevels.push(tempLevel)'
+                print(linesString)
+                lines = []
+                linesString = '\ntempLevel = new Level()'
+                mousePos1 = null
+                mousePos2 = null
+            }
+        
+
+        default:
+            break;
+    }
+
+    switch (keyCode) {
+        case LEFT_ARROW:
+            player.leftHeld = false
+
+            break;
+
+        case RIGHT_ARROW:
+
+            player.rightHeld = false
+            break;
+
+        default:
+            break;
+    }
+}

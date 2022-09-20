@@ -1,0 +1,7 @@
+finished till 14th sept
+- player class (rectangle)
+- level class (no show())
+- can draw lines
+- player movement
+- player sprite
+- fucking levels and lines holy shit
