@@ -13,7 +13,7 @@ let showingLines = false;
 let showingCoins = false;
 let levelImages = [];
 
-let creatingLines = true
+let creatingLines = false
 
 function preload() {
     backgroundImage = loadImage('images/levelImages/1.png')
@@ -60,10 +60,13 @@ function draw() {
     background(10)
     image(levels[player.currentLevel].levelImage, 0, 0)
     levels[player.currentLevel].show();
-    if (!creatingLines) player.update()
-    drawMousePosition()
-    showLines()
-    levels[player.currentLevel].showLevLines() // if we need to check lines
+    // if (!creatingLines) player.update()
+    if (creatingLines) {
+        drawMousePosition()
+        levels[player.currentLevel].showLevLines() // if we need to check lines
+    }
+    else player.update()
+    // showLines()
 
 }
 
@@ -164,7 +167,7 @@ function keyReleased() {
     switch (keyCode) {
         case LEFT_ARROW:
             player.leftHeld = false
-
+            
             break;
 
         case RIGHT_ARROW:

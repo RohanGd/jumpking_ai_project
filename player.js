@@ -47,7 +47,7 @@ class Player {
     constructor() {
         this.width = 50
         this.height = 65
-        this.currentPosition = createVector(width / 2, 800)//height - 200)
+        this.currentPosition = createVector(width / 2, height - 200)
         this.currentSpeed = createVector(0, 0)
         this.jumpHeld = false
         this.leftHeld = false 
@@ -74,6 +74,9 @@ class Player {
         this.currentPosition.add(this.currentSpeed)
         this.tempCollision()
         this.updateJumpTimer()
+
+        let currentLines = levels[this.currentLevel].lines  
+        // this.CheckCollisions(currentLines)
 
         
     }
@@ -144,12 +147,13 @@ class Player {
     updateRun() {
         this.isRunning = false
         if (this.isOnGround) {
-            if (this.leftHeld) {
+            if (this.leftHeld && !this.jumpHeld) {
+                this.facingRight = false
                 this.isRunning = true
                 this.currentSpeed = createVector(-runSpeed, 0)
             }
         
-            else if (this.rightHeld) {
+            else if (this.rightHeld && !this.jumpHeld) {
                 this.isRunning = true
                 this.currentSpeed = createVector(runSpeed, 0)
             }
@@ -166,26 +170,68 @@ class Player {
         if (this.currentSpeed.y < 0) return jumpImage
         if (this.isRunning) {
 
-            this.currentRunIndex = (this.currentRunIndex + 1) % this.runCycle.length
-            return this.runCycle[this.currentRunIndex]
+            if (this.leftHeld) {
+                this.facingRight = false
+                push()
+                scale(-1, 1)
+                this.currentRunIndex = (this.currentRunIndex + 1) % this.runCycle.length
+                pop()
+                return this.runCycle[this.currentRunIndex]
+            }
+
+
+            else if (this.rightHeld) {
+                this.facingRight = true
+                this.currentRunIndex = (this.currentRunIndex + 1) % this.runCycle.length
+                return this.runCycle[this.currentRunIndex]
+
+            }
             
-        }
+        }   
         return idleImage
     }
 
 
     tempCollision() {
         if (this.isMovingDown())
-        if (this.currentPosition.y > 800) {
-            this.currentPosition.y = 800
+        if (this.currentPosition.y > height - 200) {
+            this.currentPosition.y = height - 200
             this.currentSpeed.y = 0
             this.isOnGround = true
         }
     }
 
-    isCollidingwithLine() {
+    // isCollidingwithLine(l) {
+    //     if (l.isVertical) {
+    //         let isRectWithinLineY = (l.y1 < this.currentPosition.y && this.currentPosition.y < l.y2) || (l.y1 < this.currentPosition.y + this.height && this.currentPosition.y + this.height < l.y2) || (this.currentPosition.y < l.y1 && l.y1 < this.currentPosition.y + this.height) || (this.currentPosition.y < l.y2 && l.y2 < this.currentPosition.y + this.height)
+    //         let isRectWithinLineX = this.currentPosition.x < l.x1 && l.x1 < this.currentPosition.x + this.width
+            
+    //         return isRectWithinLineX && isRectWithinLineY
+    //     }
+    //     else if (l.isHorizontal) {
+    //         let isRectWithinLineX = (l.x1 < this.currentPosition.x && this.currentPosition.x < l.x2) || (l.x1 < this.currentPosition.x + this.width && this.currentPosition.x + this.width < l.x2) || (this.currentPosition.x < l.x1 && l.x1 < this.currentPosition.x + this.width) || (this.currentPosition.x < l.x2 && l.x2 < this.currentPosition.x + this.width)
+    //         let isRectWithinLineY = this.currentPosition.y < l.y1 && l.y1 < this.currentPosition.y + this.height
+
+    //         return isRectWithinLineX && isRectWithinLineY        
+    //     }  
+    // }
+
+    // CheckCollisions(currentLines){
+    //     let collidedLines = []
+    //     for (let line of currentLines)
+    //         if (this.isCollidingwithLine(line))
+    //             collidedLines.push(line)
+    //             console.log(line)
         
-    }
+    //     if (collidedLines.length === 0) return
+    //     let collidedwith = collidedLines[0]
+    //     console.log(typeof collidedwith)
+    //     // if (collidedwith.isVertical) {
+    //     //     if (this.isOnGround) {
+    //     //         // this.currentSpeed *= -0.75
+    //     //     }
+    //     // }
+    // }
 
 
 }
