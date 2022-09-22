@@ -63,7 +63,7 @@ function draw() {
     if (!creatingLines) player.update()
     drawMousePosition()
     showLines()
-    // l.show()
+    levels[player.currentLevel].showLevLines() // if we need to check lines
 
 }
 

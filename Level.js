@@ -13,4 +13,9 @@ class Level {
         pop()
     }
 
+    showLevLines() {
+        for(let l of this.lines)
+            l.show()
+    }
+
 }

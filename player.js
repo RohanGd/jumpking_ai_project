@@ -183,5 +183,9 @@ class Player {
         }
     }
 
+    isCollidingwithLine() {
+        
+    }
+
 
 }
