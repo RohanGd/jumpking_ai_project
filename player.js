@@ -241,6 +241,9 @@ class Player {
 
 }
 
+
+// HAVENT YET CHECKED IF THIS WORKS
+
 function line_line_collision(Ax1, Ay1, Ax2, Ay2, Bx1, By1, Bx2, By2) {
                             // a    b   c   d    p    q     r   s
     // Assume a vector r = a + (lambda)*b 
