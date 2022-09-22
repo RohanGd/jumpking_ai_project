@@ -9,7 +9,7 @@ const runSpeed = 4
 
 class playerState {
     constructor() {
-        this.currentPos = createVector(width / 2, height - 200); // this is the top left corner of the hitbox
+        this.currentPos = createVector(width / 2, 760); // this is the top left corner of the hitbox
         this.currentSpeed = createVector(0, 0);
         this.isOnGround = false;
 
@@ -47,7 +47,7 @@ class Player {
     constructor() {
         this.width = 50
         this.height = 65
-        this.currentPosition = createVector(width / 2, height - 200)
+        this.currentPosition = createVector(width / 2, 760)
         this.currentSpeed = createVector(0, 0)
         this.jumpHeld = false
         this.leftHeld = false 
@@ -76,7 +76,7 @@ class Player {
         this.updateJumpTimer()
 
         let currentLines = levels[this.currentLevel].lines  
-        // this.CheckCollisions(currentLines)
+        this.CheckCollisions(currentLines)
 
         
     }
@@ -194,44 +194,83 @@ class Player {
 
     tempCollision() {
         if (this.isMovingDown())
-        if (this.currentPosition.y > height - 200) {
-            this.currentPosition.y = height - 200
+        if (this.currentPosition.y > 760) {
+            this.currentPosition.y = 760
             this.currentSpeed.y = 0
             this.isOnGround = true
         }
     }
 
-    // isCollidingwithLine(l) {
-    //     if (l.isVertical) {
-    //         let isRectWithinLineY = (l.y1 < this.currentPosition.y && this.currentPosition.y < l.y2) || (l.y1 < this.currentPosition.y + this.height && this.currentPosition.y + this.height < l.y2) || (this.currentPosition.y < l.y1 && l.y1 < this.currentPosition.y + this.height) || (this.currentPosition.y < l.y2 && l.y2 < this.currentPosition.y + this.height)
-    //         let isRectWithinLineX = this.currentPosition.x < l.x1 && l.x1 < this.currentPosition.x + this.width
+    isCollidingwithLine(l) {
+        if (l.isVertical) {
+            let isRectWithinLineY = (l.y1 < this.currentPosition.y && this.currentPosition.y < l.y2) || (l.y1 < this.currentPosition.y + this.height && this.currentPosition.y + this.height < l.y2) || (this.currentPosition.y < l.y1 && l.y1 < this.currentPosition.y + this.height) || (this.currentPosition.y < l.y2 && l.y2 < this.currentPosition.y + this.height)
+            let isRectWithinLineX = this.currentPosition.x < l.x1 && l.x1 < this.currentPosition.x + this.width
             
-    //         return isRectWithinLineX && isRectWithinLineY
-    //     }
-    //     else if (l.isHorizontal) {
-    //         let isRectWithinLineX = (l.x1 < this.currentPosition.x && this.currentPosition.x < l.x2) || (l.x1 < this.currentPosition.x + this.width && this.currentPosition.x + this.width < l.x2) || (this.currentPosition.x < l.x1 && l.x1 < this.currentPosition.x + this.width) || (this.currentPosition.x < l.x2 && l.x2 < this.currentPosition.x + this.width)
-    //         let isRectWithinLineY = this.currentPosition.y < l.y1 && l.y1 < this.currentPosition.y + this.height
+            return isRectWithinLineX && isRectWithinLineY
+        }
+        else if (l.isHorizontal) {
+            let isRectWithinLineX = (l.x1 < this.currentPosition.x && this.currentPosition.x < l.x2) || (l.x1 < this.currentPosition.x + this.width && this.currentPosition.x + this.width < l.x2) || (this.currentPosition.x < l.x1 && l.x1 < this.currentPosition.x + this.width) || (this.currentPosition.x < l.x2 && l.x2 < this.currentPosition.x + this.width)
+            let isRectWithinLineY = this.currentPosition.y < l.y1 && l.y1 < this.currentPosition.y + this.height
 
-    //         return isRectWithinLineX && isRectWithinLineY        
-    //     }  
-    // }
+            return isRectWithinLineX && isRectWithinLineY        
+        }  
 
-    // CheckCollisions(currentLines){
-    //     let collidedLines = []
-    //     for (let line of currentLines)
-    //         if (this.isCollidingwithLine(line))
-    //             collidedLines.push(line)
-    //             console.log(line)
+        else{
+
+        }
+    }
+
+    CheckCollisions(currentLines){
+        let collidedLines = []
+        for (let line of currentLines)
+            if (this.isCollidingwithLine(line))
+                collidedLines.push(line)
+                // console.log(line)
         
-    //     if (collidedLines.length === 0) return
-    //     let collidedwith = collidedLines[0]
-    //     console.log(typeof collidedwith)
-    //     // if (collidedwith.isVertical) {
-    //     //     if (this.isOnGround) {
-    //     //         // this.currentSpeed *= -0.75
-    //     //     }
-    //     // }
-    // }
+        if (collidedLines.length === 0) return
+        let collidedwith = collidedLines[0]
+        // console.dir(collidedwith)
+        if (collidedwith.isVertical) {
+            if (this.isOnGround) {
+                // this.currentSpeed *= -0.75
+                this.currentPosition.x = collidedwith.x1
+            }
+        }
+    }
+
+
+}
+
+function line_line_collision(Ax1, Ay1, Ax2, Ay2, Bx1, By1, Bx2, By2) {
+                            // a    b   c   d    p    q     r   s
+    // Assume a vector r = a + (lambda)*b 
+    // where a is a vector at initial position of line
+    // b is direction vector but not of unit length but of complete vector length
+    // now given two vectors 
+    // r1 = a1 + lambda b1
+    // r2 = a2 + gamma b2
+    // if they intersect they have a common point
+    // on solving the two vector equations using matrices
+    // we will get a lambda and gamma
+    // since b1,b2 are not direction vectors but the the whole line vector lambda and gamma both must be in the range[0,1]
+    // otherwise it means that the intersection point of two vectors is outside the line segment
+    var det, lambda, gamma
+    det = ( Ax2 - Ax1 ) * ( By2 - By1 ) - ( Bx2 - Bx1 ) * ( Ay2 - Ay1 ) // calculating determinant of matrix
+    if (det === 0) // it means the lines are parallel
+        return [false, 0 ,0]
+    else {
+        lambda = ( ( By2 - By1 ) * ( Bx2 - Ax1 ) + (Bx1 - Bx2) * (By2 - Ay1) ) / det 
+        gamma = ( (Ay1 - Ay2) * (Bx2 - Ax1) + (Ax2 - Ax1) * (By2 - Ay1)) / det 
+    }
+    
+    if (( 0 < lambda && lambda < 1) && (0 < gamma && gamma < 1)){
+        var Xintersect = Ax1 + lambda*(Ax2-Ax1)
+        var Yintersect = Ay1 + lambda*(Ay2-Ay1)
+        return [true, Xintersect, Yintersect]
+    }
+    return [false, 0 ,0]
+
+    
 
 
 }
