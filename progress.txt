@@ -5,3 +5,6 @@ finished till 14th sept
 - player movement
 - player sprite
 - fucking levels and lines holy shit
+
+finished till 23rd sept
+- implemented collisions [ horizontal and vertical]

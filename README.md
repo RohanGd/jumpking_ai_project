@@ -8,14 +8,16 @@ index.js
 - make the levels
 
 player.js
-- collision 
-- implement fallen and bumped !!!!!!
-- current player state (get state, load state, clone state)
+<!-- - collision  -->
 - check for level change
+- change level
+- implement diagonal COLLISIONS
+- implement fallen and bumped !!!!!!
+- ice and blizzard
 - fitness_score
+- current player state (get state, load state, clone state)
 - AI action (later)
 - reset player()
-- ice and blizzard
 
 
 

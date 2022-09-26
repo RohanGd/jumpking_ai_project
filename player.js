@@ -63,6 +63,7 @@ class Player {
         this.currentRunIndex = 0
         this.runCycle = [run1Image, run1Image, run1Image, run1Image, run1Image, run1Image, run1Image, run1Image, run1Image, run1Image, run1Image, run1Image, run1Image, run2Image, run2Image, run2Image, run2Image, run2Image, run2Image, run3Image, run3Image, run3Image, run3Image, run3Image, run3Image, run3Image, run3Image, run3Image, run3Image, run3Image, run3Image, run3Image, run2Image, run2Image, run2Image, run2Image, run2Image, run2Image]
 
+        this.hasBumped = false
         this.state = new playerState()
 
     }
@@ -77,6 +78,7 @@ class Player {
 
         let currentLines = levels[this.currentLevel].lines
         this.CheckCollisions(currentLines)
+        this.CheckforLevelChange()
 
 
     }
@@ -88,7 +90,10 @@ class Player {
         if (!this.facingRight) {
             push()
             scale(-1, 1)
-            if (imageToUse == jumpImage || imageToUse == fallImage) {
+            if (this.hasBumped) {
+                image(imageToUse, -70, -30)
+            }
+            else if (imageToUse == jumpImage || imageToUse == fallImage) {
                 image(imageToUse, -70, -28)
             } else {
                 image(imageToUse, -70, -35);
@@ -97,7 +102,10 @@ class Player {
         }
 
         if (this.facingRight) {
-            if (imageToUse == jumpImage || imageToUse == fallImage) {
+            if (this.hasBumped) {
+                image(imageToUse, -20, -30)
+            }
+            else if (imageToUse == jumpImage || imageToUse == fallImage) {
                 image(imageToUse, -20, -28)
             } else {
                 image(imageToUse, -20, -35);
@@ -174,6 +182,7 @@ class Player {
     getPlayerImageBasedOnState() {
         if (this.jumpHeld && this.isOnGround) return squatImage
         if (this.currentSpeed.y < 0) return jumpImage
+        if (this.hasBumped) return oofImage
         if (this.isRunning) {
 
             if (this.leftHeld) {
@@ -202,8 +211,14 @@ class Player {
         {
             this.currentSpeed.y = 0
             this.isOnGround = true
+            this.hasBumped = false
         }
 
+    }
+
+    bonk() {
+        this.currentSpeed.y *= 0
+        this.hasBumped = true
     }
 
     isCollidingwithLine(l) {
@@ -222,6 +237,49 @@ class Player {
         }
     }
 
+    doCollison(collidedLines) {
+        let collidedWith = 0
+
+        for (let line of collidedLines) {
+            collidedWith = line
+
+            if (collidedWith.isHorizontal) {
+                if (this.isMovingDown()) {
+                    this.currentPosition.y = collidedWith.y2 - this.height
+                    this.playerLanded()
+                }
+                else if (this.isMovingUp()) {
+                    this.currentPosition.y = collidedWith.y2
+                    this.bonk()
+                    console.log('d')
+                }
+
+            } else if (collidedWith.isVertical) {
+                if (this.isOnGround) {
+                    if (this.leftHeld) {
+                        this.currentPosition.x = collidedWith.x1
+
+                    } else if (this.rightHeld) {
+                        this.currentPosition.x = collidedWith.x2 - this.width
+                    }
+                    // this.currentSpeed *= -0.75
+                } else {
+                    if (this.isMovingLeft()) {
+                        this.currentPosition.x = collidedWith.x1
+                        this.currentSpeed.x *= -1
+
+
+                    } else if (this.isMovingRight()) {
+                        this.currentPosition.x = collidedWith.x2 - this.width
+                        this.currentSpeed.x *= -1
+
+                    }
+                }
+            }
+        }
+
+    }
+
     CheckCollisions(currentLines) {
         let collidedLines = []
         for (let line of currentLines)
@@ -232,56 +290,35 @@ class Player {
         console.dir(collidedLines)
         if (collidedLines.length === 0) {
             player.isOnGround = false
-            return
+            return 
         }
-
-
-
-        let collidedwith = 0
-
-
-        for (let line of collidedLines) {
-            collidedwith = line
-
-            if (collidedwith.isHorizontal) {
-                this.playerLanded()
-                this.currentPosition.y = collidedwith.y2 - this.height
-
-            } else if (collidedwith.isVertical) {
-                if (this.isOnGround) {
-                    if (this.leftHeld) {
-                        this.currentPosition.x = collidedwith.x1
-
-                    } else if (this.rightHeld) {
-                        this.currentPosition.x = collidedwith.x2 - this.width
-                    }
-                    // this.currentSpeed *= -0.75
-                } else {
-                    if (this.isMovingLeft()) {
-                        this.currentPosition.x = collidedwith.x1
-                        this.currentSpeed.x *= -1
-
-
-                    } else if (this.isMovingRight()) {
-                        this.currentPosition.x = collidedwith.x2 - this.width
-                        this.currentSpeed.x *= -1
-
-                    }
-                }
-            }
+        
+        else {
+            this.doCollison(collidedLines)
         }
-
     }
 
 
-//     CheckforLevelChange() {
-//         if (this.currentPosition.y <= 0) 
-//             GoToNextLevel()
-//     }
+    CheckforLevelChange() {
+        if (this.currentPosition.y <= -this.height){
+            this.GoToNextLevel()
+        } 
+        if (this.currentPosition.y > height && this.currentLevel > 0){
+            this.GoToPreviousLevel()
+        }
 
-//     GotoNextLevel() {
-//         this.currentLevel += 1  
-//     }
+
+    }
+
+    GoToNextLevel() {
+        this.currentLevel += 1  
+        this.currentPosition.y += height
+    }
+
+    GoToPreviousLevel() {
+        this.currentLevel -= 1
+        this.currentPosition.y -= height
+    }
 
 
 }
