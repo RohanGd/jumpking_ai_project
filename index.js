@@ -26,8 +26,6 @@ function preload() {
     run3Image = loadImage('images/poses/run3.png')
     fallenImage = loadImage('images/poses/fallen.png')
     fallImage = loadImage('images/poses/fall.png')
-
-
     snowImage = loadImage('images/snow3.png')
 
     for (let i = 1; i <= 43; i++) {
@@ -65,7 +63,9 @@ function draw() {
         drawMousePosition()
         levels[player.currentLevel].showLevLines() // if we need to check lines
     }
-    else player.update()
+    else {
+        player.update()
+    }
     // showLines()
 
 }
@@ -157,6 +157,9 @@ function keyReleased() {
                 linesString = '\ntempLevel = new Level()'
                 mousePos1 = null
                 mousePos2 = null
+            } 
+            else {
+                player.currentLevel += 5
             }
         
 

@@ -9,7 +9,7 @@ index.js
 
 player.js
 <!-- - collision  -->
-- check for level change
+<!-- - check for level change -->
 - change level
 - implement diagonal COLLISIONS
 - implement fallen and bumped !!!!!!

@@ -1,3 +1,12 @@
+class DiagonalCollisionInfo {
+    constructor() {
+        this.collisionPoints = []
+        this.leftSideOfPlayerCollided = false;
+        this.rightSideOfPlayerCollided = false;
+        this.topSideOfPlayerCollided = false;
+        this.bottomSideOfPlayerCollided = false;
+    }
+}
 class Line {
     constructor(x1, y1, x2, y2) {
         this.x1 = x1
@@ -7,6 +16,8 @@ class Line {
         this.isHorizontal = y1 === y2
         this.isVertical = x1 === x2 
         this.isdiagonal = !(this.isHorizontal || this.isVertical)
+
+        this.midPoint =  createVector((x1+x2)/2,(y1+y2)/2);
         
         this.ensurePointsInOrder()
     }
