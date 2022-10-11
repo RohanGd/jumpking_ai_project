@@ -10,11 +10,12 @@ index.js
 player.js
 <!-- - collision  -->
 <!-- - check for level change -->
-- change level
-- implement diagonal COLLISIONS
-- implement fallen and bumped !!!!!!
-- ice and blizzard
-- fitness_score
+<!-- - change level -->
+<!-- - implement diagonal COLLISIONS -->
+<!-- - implement fallen and bumped !!!!!! -->
+<!-- - ice and blizzard -->
+<!-- - fitness_score -->
+- implement clone
 - current player state (get state, load state, clone state)
 - AI action (later)
 - reset player()

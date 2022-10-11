@@ -3,8 +3,10 @@ class Level {
         this.lines = []
         this.levelImage = null
         this.levIndex = 0
-        this.blizzard = false 
-        this.ice = false 
+        this.isBlizzardLevel = false;
+        this.isIceLevel = false;
+        this.coins = [];
+        this.hasProgressionCoins = false;
     }
 
     show() {

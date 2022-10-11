@@ -8,3 +8,7 @@ finished till 14th sept
 
 finished till 23rd sept
 - implemented collisions [ horizontal and vertical]
+
+finished till 4th oct 
+- implemented fitness score 
+- implemented coin collision 

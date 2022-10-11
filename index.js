@@ -12,6 +12,9 @@ let fallImage = null;
 let showingLines = false;
 let showingCoins = false;
 let levelImages = [];
+let noOfMoves = 5
+
+let replayingBestPlayer= true
 
 let creatingLines = false
 
@@ -50,6 +53,7 @@ function setUpCanvas() {
 function setup() {
     setUpCanvas()
     player = new Player()
+    currentPopulation = new Population(50)
     setupLevels()
     
 }
@@ -66,6 +70,8 @@ function draw() {
     else {
         player.update()
     }
+    currentPopulation.Update()
+    currentPopulation.Show()
     // showLines()
 
 }
