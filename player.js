@@ -15,7 +15,7 @@ let iceFrictionAcceleration = 0.2;
 let playerIceRunAcceleration = 0.2;
 
 let alreadyShowingSnow = false //add in population
-let testingSinglePlayer = false
+
 
 class playerState {
     constructor() {
@@ -166,7 +166,8 @@ class Player {
         this.aiActionMaxTime = 0;
         this.isWaitingToStartAction = false;
         this.actionStarted = false;
-        this.brain = new Brain(noOfMoves)
+        this.brain = new Brain(startingPlayerActions)
+        this.brain.currentInstructionNumber = 0;
         this.currentAction = null;
 
         this.playersDead = false;
@@ -199,7 +200,6 @@ class Player {
     }
 
     update() {
-        this.show()
         if (this.playersDead)//|| this.hasFinishedInstructions)
             return;
         if (!testingSinglePlayer && !this.hasFinishedInstructions) {
@@ -219,6 +219,8 @@ class Player {
         this.CheckCollisions(currentLines)
         this.updateJumpTimer()
         this.CheckforLevelChange()
+        // this.CheckForCoinCollision()
+
 
         if (this.getNewPlayerStateAtEndOfUpdate) {
             if (this.currentLevelNo !== 37) {
@@ -1073,8 +1075,14 @@ class Player {
         if (this.currentPosition.y <= -this.height) {
             this.GoToNextLevel()
         }
-        if (this.currentPosition.y > height && this.currentLevel > 0) {
+        else if (this.currentPosition.y > height && this.currentLevel > 0) {
             this.GoToPreviousLevel()
+
+            if (!this.hasFinishedInstructions && this.currentLevelNo < this.bestLevelReached - 1) {
+                this.fellToPreviousLevel = true;
+                this.fellOnActionNo = this.brain.currentInstructionNumber;
+                this.hasFinishedInstructions = true;
+            }
         }
 
 
@@ -1107,6 +1115,7 @@ class Player {
             return
         }
         let currentLevel = levels[this.currentLevelNo]
+
         for (let i = 0; i < currentLevel.coins.length; i++) {
             if (!this.coinsPickedUpIndexes.includes(i)) {
                 if (currentLevel.coins[i].collidesWithPlayer(this)) {
@@ -1151,7 +1160,7 @@ class Player {
     EndCurrentAction() {
         if (this.currentAction.isJump) {
             this.jumpHeld = false;
-            this.Jump();
+            this.jump();
         }
         this.leftHeld = false;
         this.rightHeld = false;
@@ -1169,6 +1178,7 @@ class Player {
         //also if the ai is not on the ground and the action has already started then end the action
         if (this.isOnGround && !this.actionStarted) {
             this.currentAction = this.brain.getNextAction();
+            console.log(this.currentAction)
             if (this.currentAction === null) {
                 this.hasFinishedInstructions = true;
                 return;

@@ -12,11 +12,17 @@ let fallImage = null;
 let showingLines = false;
 let showingCoins = false;
 let levelImages = [];
-let noOfMoves = 5
 
 let replayingBestPlayer= true
 
 let creatingLines = false
+
+let startingPlayerActions = 5; //!!
+let increaseActionsByAmount = 5;
+let increaseActionsEveryXGenerations = 10;
+let evolationSpeed = 1;
+
+let testingSinglePlayer = false
 
 function preload() {
     backgroundImage = loadImage('images/levelImages/1.png')
@@ -53,27 +59,32 @@ function setUpCanvas() {
 function setup() {
     setUpCanvas()
     player = new Player()
-    currentPopulation = new Population(50)
+    population = new Population(50)
     setupLevels()
     
 }
 
 function draw() {
     background(10)
-    image(levels[player.currentLevel].levelImage, 0, 0)
-    levels[player.currentLevel].show();
-    // if (!creatingLines) player.update()
+    if (testingSinglePlayer) {
+        image(levels[player.currentLevel].levelImage, 0, 0)
+        levels[player.currentLevel].show();
+        player.update();
+        player.show();
+    } 
+    else {
+        image(levels[player.currentLevel].levelImage, 0, 0)
+        levels[player.currentLevel].show();
+        for (let i = 0; i < evolationSpeed; i++)
+            population.Update()
+        // population.Update()
+        // population.Update()
+        population.Show();
+    }
     if (creatingLines) {
         drawMousePosition()
         levels[player.currentLevel].showLevLines() // if we need to check lines
     }
-    else {
-        player.update()
-    }
-    currentPopulation.Update()
-    currentPopulation.Show()
-    // showLines()
-
 }
 
 let mousePos1 = null

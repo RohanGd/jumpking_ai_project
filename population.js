@@ -17,8 +17,9 @@ class Population {
     }
 
     Update() {
-        for (let i=0; i<this.players.length;i++)
+        for (let i=0; i<this.players.length;i++) {
             this.players[i].update()
+        }
     }
 
     SetBestPlayer() {

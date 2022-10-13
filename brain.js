@@ -1,5 +1,5 @@
-let jumpChance = 0
-let fullJumpChance = 0 
+let jumpChance = 0.5
+let fullJumpChance = 0.2 
 
 
 class AIAction {
@@ -8,21 +8,28 @@ class AIAction {
         this.holdTime = holdTime;//number between 0 and 1
         this.xDirection = xDirection;
     }
+    clone() {
+        return new AIAction(this.isJump, this.holdTime, this.xDirection);
+    }
+
+    mutate() {
+        this.holdTime += random(-0.3,0.3);
+        this.holdTime = constrain(this.holdTime,0.1,1);
+    }
 }
 
 
 class Brain {
     constructor(size, randomMoves=true) {
-        this.size = size
         this.setOfMoves = []
         this.moveIndex = 0
-        if (randomMoves == true) 
+        if (randomMoves) 
             this.randomize(size)
     }
 
-    randomize() {
-        for (let i=0; i<this.ResizeObserverSize; i++)
-            this.setOfMoves = this.getRandomAction()
+    randomize(size) {
+        for (let i=0; i<size; i++)
+            this.setOfMoves[i] = this.getRandomAction()
     }
 
     getRandomAction() {
@@ -32,7 +39,7 @@ class Brain {
             isJump = true
 
         let holdTime = random(0.1, 1);
-        if(random()<chanceOfFullJump){
+        if(random()<fullJumpChance){
             holdTime = 1;
         }
 
@@ -46,7 +53,9 @@ class Brain {
         if(this.moveIndex >= this.setOfMoves.length){
             return null;
         }
+        console.log(this.moveIndex)
+        console.log(this.setOfMoves.length)
         this.moveIndex += 1;
-        return this.setOfMoves[this.currentInstructionNumber - 1];
+        return this.setOfMoves[this.moveIndex - 1];
     }
 }
