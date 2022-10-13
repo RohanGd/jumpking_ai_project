@@ -302,11 +302,18 @@ class Player {
         let verticalJumpSpeed = map(this.jumptime, 0, maxJumpTimer, minJumpV, maxJumpV)
         if (this.leftHeld) {
             this.currentSpeed = createVector(-jumpSpeedX, -verticalJumpSpeed)
+            this.facingRight = false;
+
         } else if (this.rightHeld) {
             this.currentSpeed = createVector(jumpSpeedX, -verticalJumpSpeed)
+            this.facingRight = true;
+
         } else {
             this.currentSpeed.y = -verticalJumpSpeed
         }
+        this.hasFallen = false;
+        this.isOnGround = false
+        
         this.jumptime = 0
         this.jumpStartingHeight = (height - this.currentPosition.y) + height * this.currentLevel;
 
