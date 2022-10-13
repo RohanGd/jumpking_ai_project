@@ -25,6 +25,8 @@ class Brain {
         this.moveIndex = 0
         if (randomMoves) 
             this.randomize(size)
+        this.parentReachedBestLevelAtActionNo = 0;
+
     }
 
     randomize(size) {
